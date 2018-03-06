@@ -12,7 +12,9 @@ import kotlinx.android.synthetic.main.restaurant_recyclerview_item.view.*
 /**
  * Created by per6 on 3/2/18.
  */
-class RestaurantAdapter(private val lifecycleOwner: LifecycleOwner, val items : RestaurantLiveData) : RecyclerView.Adapter<RestaurantViewHolder>() {
+class RestaurantAdapter(private val lifecycleOwner: LifecycleOwner, val items: LiveData<List<Restaurant>>) : RecyclerView.Adapter<RestaurantViewHolder>() {
+
+    var onItemLongClick : ((View, Int) -> Unit)? = null
 
     init {
         items.observe(lifecycleOwner, Observer<List<Restaurant>> {
@@ -26,19 +28,30 @@ class RestaurantAdapter(private val lifecycleOwner: LifecycleOwner, val items : 
         return RestaurantViewHolder(rootView)
     }
 
-    override fun getItemCount(): Int = items.size
+    override fun getItemCount(): Int {
+        items.value?.size?.let {
+            return it
+        }
+        return 0
+    }
 
     override fun onBindViewHolder(holder: RestaurantViewHolder, position: Int) {
 
-        val item = items[position]
+        val item = items.value?.get(position)
         holder.itemView?.apply {
-            restaurantName.text = item.restaurantName
-            genre.text = item.genre
-            address.text = item.address
-            foodRating.rating = item.foodRating.toFloat()
-            priceRating.rating = item.priceRating.toFloat()
+            item?.let {
+                restaurantName.text = it.restaurantName
+                genre.text = it.genre
+                address.text = it.address
+                foodRating.rating = it.foodRating.toFloat()
+                priceRating.rating = it.priceRating.toFloat()
+            }
+            setOnLongClickListener {
+                onItemLongClick?.invoke(this, position)
+                return@setOnLongClickListener true
+            }
         }
     }
 }
 
-class RestaurantViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {}
+class RestaurantViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {}

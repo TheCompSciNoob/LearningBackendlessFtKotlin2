@@ -10,6 +10,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        if (savedInstanceState != null) return
+
         val user = Backendless.UserService.CurrentUser()
         if (user == null) {
             supportFragmentManager.beginTransaction().replace(R.id.fragmentContainer, LoginFragment()).commit()

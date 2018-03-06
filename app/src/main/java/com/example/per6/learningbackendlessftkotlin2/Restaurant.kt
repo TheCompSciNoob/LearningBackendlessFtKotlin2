@@ -15,5 +15,6 @@ data class Restaurant(var restaurantName: String = "",
                       var address : String = "",
                       var priceRating : Double = 0.0,
                       var foodRating : Double = 0.0) : Parcelable {
+    var ownerId : String? = null
     var objectId : String? = null
 }
